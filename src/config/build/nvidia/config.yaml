@@ -1,0 +1,20 @@
+DATA:
+  BATCH_SIZE: 8
+  OTHER_AUGMENT: true
+  ROT_AUGMENT: true
+  SHUFFLE: true
+MODEL:
+  PRETRAINED_PATH: models/mursop_fp32_dspeed
+  QUANTIZATION: true
+TRAIN:
+  QAT: True
+  DECAY: 0.0
+  GAMMA: 0.1
+  LR: 0.001
+  MILESTONES:
+  - 15
+  MOMENTUM: 0.9
+  N_EPOCH: 20
+  OPTIM: SGD
+  SCHEDULER: MultiStepLR
+  CLIP_BATCHNORM: False

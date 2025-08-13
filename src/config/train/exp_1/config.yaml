@@ -1,0 +1,37 @@
+DATA:
+  BATCH_SIZE: 8
+  IMG_SIZE:
+  - 240
+  - 240
+  ORI_SMOOTH_FACTOR: 3
+  OTHER_AUGMENT: true
+  PATH: ../datasets/speed
+  POS_SMOOTH_FACTOR: 100
+  ROT_AUGMENT: true
+  SHUFFLE: true
+MODEL:
+  BACKBONE:
+    NAME: mobilenet_v2_brevitas
+    RESIDUAL: true
+  HEAD:
+    KEYPOINTS_PATH: models/3d_models/tangoPoints.mat
+    NAME: ursonet_pytorch
+    N_ORI_BINS_PER_DIM: 12
+    N_POS_BINS_PER_DIM: 10
+    ORI: classification
+    ORI_DELETE_UNUSED_BINS: false
+    POS: regression
+  MANUAL_COPY: true
+  PRETRAINED_PATH: models/murso_fp32_speed_240/model/parameters.pt
+  QUANTIZATION: true
+TRAIN:
+  DECAY: 0.0
+  GAMMA: 0.1
+  LR: 0.001
+  MILESTONES:
+  - 15
+  MOMENTUM: 0.9
+  N_EPOCH: 20
+  OPTIM: SGD
+  SCHEDULER: MultiStepLR
+  CLIP_BATCHNORM: false

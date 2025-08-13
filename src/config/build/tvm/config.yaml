@@ -1,0 +1,25 @@
+DATA:
+  BATCH_SIZE: 8
+  OTHER_AUGMENT: true
+  ROT_AUGMENT: true
+  SHUFFLE: true
+MODEL:
+  PRETRAINED_PATH: models/mursop_fp32_speed
+  QUANTIZATION: true
+TRAIN:
+  QAT: False
+  DECAY: 0.0
+  GAMMA: 0.1
+  LR: 0.001
+  MILESTONES:
+  - 15
+  MOMENTUM: 0.9
+  N_EPOCH: 20
+  OPTIM: SGD
+  SCHEDULER: MultiStepLR
+  CLIP_BATCHNORM: False
+COMPILE:
+  RUN_AUTOSCHEDULING: true
+  N_TRIALS: 20000
+  SCHEDULING_PATH: experiments/build/tvm/scheduling/scheduling_20000_mursop_ultra96.json
+  BOARD: Ultra96

@@ -1,0 +1,34 @@
+DATA:
+  BATCH_SIZE: 1
+  IMG_SIZE:
+  - 240
+  - 240
+  ORI_SMOOTH_FACTOR: 3
+  POS_SMOOTH_FACTOR: 100
+  PATH: ../datasets/speed
+FINN:
+  ACCEL:
+    CLK_PERIOD_NS: 5
+    TARGET_CYCLES_PER_FRAME: 800000
+  BOARD:
+    DEPLOYMENT_FOLDER: /home/xilinx/spacecraft_pose_estimation
+    NAME: ZCU104
+  FIFO:
+    AUTO_DEPTH: true
+    RTL_SIM: true
+    SIZING_METHOD: largefifo_rtlsim
+    SPLIT_LARGE: true
+MODEL:
+  BACKBONE:
+    NAME: mobilenet_v2_brevitas
+    RESIDUAL: true
+  HEAD:
+    NAME: ursonet_pytorch
+    ORI: classification
+    N_ORI_BINS_PER_DIM: 12
+    POS: regression
+    N_POS_BINS_PER_DIM: 10
+    KEYPOINTS_PATH: models/3d_models/tangoPoints.mat
+  MANUAL_COPY: false
+  PATH: models/murso_mpq_fpga_speed/model
+  QUANTIZATION: true
