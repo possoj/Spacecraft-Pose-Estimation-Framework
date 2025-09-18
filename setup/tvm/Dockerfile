@@ -16,8 +16,6 @@ ENV TVM_ROOT="/opt/tvm"
 
 # Install packages
 RUN apt update \
-#    && apt install -y libtinfo-dev=6.2-0ubuntu2 \
-#    && apt install -y libxml2-dev=2.9.10+dfsg-5ubuntu0.20.04.3 \
     && apt install -y libtinfo-dev \
     && apt install -y libxml2-dev
 
@@ -52,5 +50,4 @@ ENV PYTHONPATH=$TVM_HOME/python:$PYTHONPATH
 EXPOSE 8888 9091 9190
 
 # Install python packages
-# RUN conda install -c conda-forge xlsxwriter==3.0.3 paramiko==2.11.0
 RUN pip install xlsxwriter==3.0.3 paramiko==2.11.0 pandas==1.5.3 brevitas==0.7.1 yacs==0.1.8 torchlop==0.2 openpyxl==3.1.2

@@ -42,7 +42,7 @@ ARG XILINX_PATH=/tools/Xilinx
 # Directory where FINN will be installed in the container
 ARG FINN_PATH=/tools/finn
 # Directory where the project will be mounted inside the container
-ARG PROJECT_ROOT=/workspace/pose_estimation/spacecraft_pose_estimation
+ARG PROJECT_ROOT=/workspace/pose_estimation/Spacecraft-Pose-Estimation-Framework
 # FINN version (release version https://github.com/Xilinx/finn/releases)
 ARG FINN_VERSION=v0.9
 
@@ -100,7 +100,7 @@ RUN cd verilator && \
 # extra Python package dependencies (for testing and interaction)
 RUN pip install pygments==2.4.1 \
     && pip install ipykernel==5.5.5 \
-    && pip install --ignore-installed jupyter==1.0.0 \
+    # && pip install --ignore-installed jupyter==1.0.0 \
     && pip install markupsafe==2.0.1 \
     && pip install matplotlib==3.3.1 --ignore-installed \
     && pip install pytest-dependency==0.5.1 \
