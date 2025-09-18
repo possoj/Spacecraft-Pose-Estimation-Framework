@@ -1,2 +1,3 @@
-/finn_build/
+/finn_build/*
+!/finn_build/README.md
 /.idea/
