@@ -5,7 +5,7 @@ DATA:
   - 384
   ORI_SMOOTH_FACTOR: 3
   OTHER_AUGMENT: true
-  PATH: ../datasets/speed
+  PATH: ../datasets/speedPlus
   POS_SMOOTH_FACTOR: 100
   ROT_AUGMENT: true
   SHUFFLE: true
