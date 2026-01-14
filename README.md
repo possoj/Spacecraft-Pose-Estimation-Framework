@@ -2,7 +2,7 @@
 
 The **Spacecraft Pose Estimation Framework (SPEF)** is an open-source toolkit for **training, quantizing, and deploying deep neural networks** for spacecraft pose estimation from monocular images and video sequences.
 
-SPEF has been developed in the context of a Ph.D. thesis and an upcoming IEEE TAES journal publication. It supports **real-time embedded implementations** on **CPU**, **GPU (NVIDIA Jetson)**, and **FPGA**, and includes utilities for **dataset generation**, **temporal evaluation**, and **visualization**.
+SPEF was developed as part of a [Ph.D. thesis at Polytechnique Montréal](https://publications.polymtl.ca/67849/) and is the subject of an upcoming IEEE TAES journal publication. It supports **real-time embedded implementations** on **CPU**, **GPU (NVIDIA Jetson)**, and **FPGA**, and includes utilities for **dataset generation**, **temporal evaluation**, and **visualization**.
 
 ---
 
@@ -144,7 +144,39 @@ Predefined **train/validation splits** of the original SPEED dataset are provide
 | Jetson Orin Nano     | 0.2088     | 560  | 4.28 W  |
 | FPGA UltraScale+     | 0.3518     | 58.7 | 0.865 W |
 
-Full details will be provided in the IEEE TAES article (coming soon, currently under review).
+Full experimental details and analyses are provided in the [Ph.D. thesis](https://publications.polymtl.ca/67849/) and will be summarized in the upcoming IEEE TAES article (currently under review).
+
+---
+
+## 📝 Citing this work
+
+If you use **SPEF** in your research, please cite the following Ph.D. thesis:
+
+```bibtex
+@phdthesis{posso2025phd,
+   month = aug,
+   title = {Estimation de pose de v{\'e}hicules spatiaux non coop{\'e}ratifs {\`a} partir de r{\'e}seaux de neurones – De l'image monoculaire {\`a} l'impl{\'e}mentation embarqu{\'e}e temps r{\'e}el et {\`a} l'analyse temporelle},
+  school = {Polytechnique Montr{\'e}al},
+  author = {Julien Posso},
+    year = {2025},
+     url = {https://publications.polymtl.ca/67849/},
+}
+```
+
+If you use the **D-SPEED** dataset, please cite the dataset specifically:
+
+```bibtex
+@dataset{posso2025dspeed,
+  author       = {Posso, Julien and Bois, Guy and Savaria, Yvon},
+  title        = {Dynamic-Spacecraft Pose Estimation Dataset (D-SPEED)},
+  month        = jul,
+  year         = 2025,
+  publisher    = {Zenodo},
+  version      = {1.0},
+  doi          = {10.5281/zenodo.15851302},
+  url          = {https://doi.org/10.5281/zenodo.15851302},
+}
+```
 
 ---
 
