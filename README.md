@@ -32,7 +32,7 @@ All installations are handled via Dockerfiles located in the `setup/` directory.
 
 The pretrained models and experimental results are hosted on Zenodo due to file size limitations.  
 
-👉 [Download from Zenodo](https://doi.org/10.5281/zenodo.17137746)  
+👉 [Download from Zenodo](https://doi.org/10.5281/zenodo.17137745)  
 
 Contents on Zenodo:  
 - **models/**: pretrained neural network weights and checkpoints, evaluation metrics, configuration files, and annotated 3D keypoints of the *Tango* spacecraft.  
