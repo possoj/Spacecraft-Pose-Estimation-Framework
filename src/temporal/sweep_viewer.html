@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>%%TITLE%% — filter parameter sweep</title>
+<script src="../plotly.min.js"></script>
+<style>
+body {font:15px system-ui; margin:20px; color:#182330}
+header {max-width:1400px; margin:auto}
+label {display:inline-block; margin:8px 20px 8px 0}
+button,select {font:inherit; padding:5px}
+input[type=range] {width:260px; vertical-align:middle}
+.note {color:#536170; font-size:13px}
+table {border-collapse:collapse; font-size:13px}
+th,td {padding:5px 14px; border-bottom:1px solid #ddd; text-align:right}
+th:first-child,td:first-child {text-align:left}
+#plot {width:100%; height:1000px}
+#legend span {margin-right:22px}
+a {color:#155ca2}
+</style>
+</head>
+<body>
+<header>
+<a href="../index.html">← All sequences</a>
+<h1>%%TITLE%% — comparison of successive settings</h1>
+<label>Component <select id="component"><option value="ori">Attitude</option><option value="pos">Position</option></select></label>
+<label>Filter <select id="method"><option value="adaptive">Adaptive: decreasing n</option><option value="ema">EMA: decreasing beta</option><option value="moving_average">Moving average: increasing W</option></select></label>
+<label>Setting <select id="candidate"></select></label>
+<div><button id="back">← Less smoothing</button> <input id="slider" type="range" min="0" value="0" step="1"> <button id="next">More smoothing →</button> <button id="reset">Reset zoom</button></div>
+<p id="comparison"></p>
+<p id="legend"><span style="color:#168245">━ Ground truth</span><span style="color:#aaa">━ Raw prediction</span><span style="color:#d88912">━ Previous setting</span><span style="color:#176ac5">━ Current setting</span></p>
+<div id="metrics"></div>
+<p class="note">Error changes are shown relative to the previous setting. No parameter is selected automatically. At the first setting, the reference is the raw prediction. Drag to zoom; double-click to reset. Click a legend entry to hide a curve. Predictions are never shifted in time.</p>
+<p class="note">Euler angles are aligned to the ground-truth branch for display only and remain sensitive to gimbal lock. Attitude error and metrics are computed from quaternions.</p>
+<a id="png">PNG overview of this sweep</a> · <a href="tracks.npz">Complete trajectories (NPZ)</a>
+</header>
+<div id="plot"></div>
+<script id="sweep-data" type="application/json">%%DATA%%</script>
+<script>
+const data = JSON.parse(document.getElementById('sweep-data').textContent);
+const component = document.getElementById('component');
+const method = document.getElementById('method');
+const candidate = document.getElementById('candidate');
+const slider = document.getElementById('slider');
+let revision = 0;
+const colors = ['#168245','#aaa','#d88912','#176ac5'];
+function settingsChanged() {
+  const candidates = data[component.value].candidates[method.value];
+  candidate.replaceChildren();
+  candidates.forEach((c,i) => {const option=document.createElement('option'); option.value=i; option.textContent=c.label; candidate.append(option)});
+  slider.max=candidates.length-1; slider.value=0; revision++; draw();
+}
+function number(value) {return value===null || value===undefined ? '—' : value.toFixed(4)}
+function draw() {
+  const comp=component.value, list=data[comp].candidates[method.value];
+  const index=Number(candidate.value), current=list[index], previous=index ? list[index-1] : data[comp].raw;
+  slider.value=index;
+  const previousLabel=index ? previous.label : 'raw';
+  document.getElementById('comparison').textContent=`${previousLabel} → ${current.label}` +
+    (method.value==='adaptive' ? `; fixed alpha=${data.alpha[comp]}` : '');
+  document.getElementById('back').disabled=index===0;
+  document.getElementById('next').disabled=index===list.length-1;
+  document.getElementById('png').href=`${method.value}_${comp}.png`;
+  const unit=comp==='ori' ? '°' : 'm';
+  const metrics=[['mean','Mean error',unit],['p95','95th percentile',unit],['rmse','RMSE',unit],
+                 ['jitter','Residual jitter',unit+'/s'],['rpe25','Relative motion error over 1 s',unit],
+                 ['lag_frames','Lag proxy (0–10 frames)','frames']];
+  document.getElementById('metrics').innerHTML='<table><tr><th>Metric</th><th>Previous</th><th>Current</th><th>Difference</th></tr>'+
+    metrics.map(([key,label,u])=>{
+      const a=previous.metrics[key], b=current.metrics[key];
+      const delta=a===null || b===null ? null : b-a;
+      const color=delta===null ? '#555' : delta>0 ? '#a62b27' : '#168245';
+      return `<tr><td>${label} (${u})</td><td>${number(a)}</td><td>${number(b)}</td><td style="color:${color}">${number(delta)}</td></tr>`
+    }).join('')+'</table>';
+  const series=[data[comp].truth,data[comp].raw,previous,current];
+  const names=['Ground truth','Raw prediction',`Previous : ${previousLabel}`,`Current : ${current.label}`];
+  const labels=comp==='ori' ? ['Error (°)','Yaw (°)','Pitch (°)','Roll (°)'] : ['Error (m)','x (m)','y (m)','z (m)'];
+  const traces=[];
+  for(let row=0;row<4;row++) {
+    series.forEach((s,j)=>{
+      const suffix=row ? String(row+1) : '';
+      traces.push({x:data.time,y:row===0 ? s.error : s.values[row-1],type:'scatter',mode:'lines',
+        name:names[j],legendgroup:String(j),showlegend:row===0,xaxis:'x'+suffix,yaxis:'y'+suffix,
+        line:{color:colors[j],width:j===1 ? 0.7 : 1.6,dash:j===2 ? 'dash' : 'solid'},opacity:j===1 ? 0.4 : 1,
+        hovertemplate:'%{x:.2f} s : %{y:.5f}<extra>'+names[j]+'</extra>'});
+    });
+  }
+  const layout={title:{text:`${data.name} — ${comp==='ori'?'attitude':'position'} — ${previousLabel} → ${current.label}`,
+      x:0.5,xanchor:'center',y:0.98,yanchor:'top'},
+    height:1000,margin:{l:85,r:25,t:130,b:60},hovermode:'x',uirevision:`${data.name}-${comp}-${revision}`,
+    legend:{orientation:'h',y:1.04,yanchor:'bottom'},paper_bgcolor:'#fff',plot_bgcolor:'#fff'};
+  for(let row=0;row<4;row++) {
+    const suffix=row ? String(row+1) : '';
+    layout['xaxis'+suffix]={anchor:'y'+suffix,matches:row ? 'x' : undefined,
+      title:row===3 ? 'Time (s)' : undefined,showticklabels:row===3,gridcolor:'#eee',zeroline:false};
+    layout['yaxis'+suffix]={anchor:'x'+suffix,domain:[(3-row)*0.25,(3-row)*0.25+0.20],
+      title:labels[row],gridcolor:'#eee',zeroline:false};
+  }
+  Plotly.react('plot',traces,layout,{responsive:true,displaylogo:false,scrollZoom:true,
+    toImageButtonOptions:{format:'png',filename:`${data.name}_${method.value}_${comp}_${current.label}`,width:1600,height:1100}});
+}
+component.addEventListener('change',settingsChanged);
+method.addEventListener('change',settingsChanged);
+candidate.addEventListener('change',draw);
+slider.addEventListener('input',()=>{candidate.value=slider.value;draw()});
+document.getElementById('back').onclick=()=>{candidate.value=Math.max(0,Number(candidate.value)-1);draw()};
+document.getElementById('next').onclick=()=>{candidate.value=Math.min(Number(slider.max),Number(candidate.value)+1);draw()};
+document.getElementById('reset').onclick=()=>{revision++;draw()};
+settingsChanged();
+</script>
+</body>
+</html>

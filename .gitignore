@@ -1,3 +1,9 @@
-/finn_build/*
+finn_build/*
 !/finn_build/README.md
+experiments/*
+!/experiments/README.md
+models/*
+!/models/README.md
 /.idea/
+__pycache__/
+*.pyc

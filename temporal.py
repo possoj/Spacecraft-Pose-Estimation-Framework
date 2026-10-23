@@ -82,7 +82,7 @@ def main(
     positions = ["x", "y", "z"]
 
     exp_dir = f'{os.path.basename(model_path)}_{video_type}'
-    exp_path = os.path.join('experiments', 'temporal', exp_dir)
+    exp_path = os.path.join('experiments', 'temporal_phd_thesis', exp_dir)
 
     shutil.rmtree(exp_path, ignore_errors=True)
     os.makedirs(exp_path, exist_ok=True)

@@ -14,8 +14,11 @@ class MovingAverage:
             self.data.pop(0)
 
     def predict(self):
-        averages = [sum(x) / len(x) for x in zip(*self.data)]
-        return averages
+        if not self.data:
+            return []
+        # Preserve the list API while averaging PMF bins in NumPy. Repeating
+        # the Python sum for every bin is expensive in a window-size sweep.
+        return np.mean(np.asarray(self.data, dtype=np.float64), axis=0).tolist()
 
 
 class ExponentialMovingAverage:

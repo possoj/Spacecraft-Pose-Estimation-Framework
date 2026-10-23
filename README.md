@@ -80,7 +80,8 @@ When running `deploy_cpu.py` (same for `deploy_nvidia.py` / `deploy_fpga.py`), t
 - FINN: `experiments/build/finn/<run_id>`  
 
 ### 4. Additional Tools
-- `temporal.py`: Evaluate on temporal D-SPEED data → results in `experiments/temporal/`
+- `temporal.py`: Classic temporal evaluation for the thesis on D-SPEED data → results in `experiments/temporal_phd_thesis/`
+- `temporal_benchmark.py`: TAES workflow: by default, cache/reuse frame predictions and evaluate the three causal filters at confirmed fixed settings on D-SPEED. `--stage sweep` generates interactive curves for manual parameter selection; `--stage evaluate` exports the confirmed settings, detailed results and one composite figure per video as [fixed-evaluation results](experiments/temporal_benchmark_ieee_taes/evaluation/README.md). See [benchmark protocol](experiments/temporal_benchmark_ieee_taes/README.md).
 - `nn_stats.py`: Print per-layer network statistics (MACs, parameters)
 - `soft_class_plot.py`: Evaluate soft-classification encoding/decoding impact on pose accuracy → results in `experiments/soft_classification/`
 
@@ -94,27 +95,31 @@ If the Jetson board has been configured and is reachable from the host computer 
 ---
 
 ## 📂 Repository Structure
-```
+
+```text
 Spacecraft-Pose-Estimation-Framework/
-├── experiments/        # Stores all experiment results (training, build, temporal, etc.)
-├── models/             # Manually copy models here after training for deployment or GUI visualization
-├── setup/              # Dockerfiles and platform-specific README instructions
-├── src/                # Source code
-├── finn_build/         # Intermediate results/debug folder used by FINN
-├── train.py            # Training entry point
-├── eval.py             # Evaluation entry point
-├── build_finn.py       # Build script for FPGA (FINN)
-├── build_nvidia.py     # Build script for NVIDIA Jetson GPU (TensorRT)
-├── build_tvm.py        # Build script for CPU (TVM)
-├── deploy_finn.py      # Deployment script for FPGA
-├── deploy_nvidia.py    # Deployment script for NVIDIA Jetson GPU
-├── deploy_tvm.py       # Deployment script for CPU
-├── gui.py              # Graphical User Interface for pose visualization
-├── temporal.py         # Evaluation on temporal data from D-SPEED, outputs to experiments/temporal
-├── nn_stats.py         # Per-layer network stats including MAC count and parameters
-├── soft_class_plot.py  # Experiment to visualize impact of soft-classification encoding/decoding on pose accuracy
-├── README.md           # This file
-└── LICENSE             # MIT License
+├── experiments/            # Stores all experiment results (training, build, temporal, etc.)
+├── models/                 # Manually copy models here after training for deployment or GUI visualization
+├── setup/                  # Dockerfiles and platform-specific README instructions
+├── src/                    # Source code
+├── tests/                  # Tests for the TAES temporal benchmark
+├── finn_build/             # Intermediate results/debug folder used by FINN
+├── train.py                # Training entry point
+├── eval.py                 # Evaluation entry point
+├── create_dspeed.py        # D-SPEED dataset-generation entry point
+├── build_finn.py           # Build script for FPGA (FINN)
+├── build_nvidia.py         # Build script for NVIDIA Jetson GPU (TensorRT)
+├── build_tvm.py            # Build script for CPU (TVM)
+├── deploy_finn.py          # Deployment script for FPGA
+├── deploy_nvidia.py        # Deployment script for NVIDIA Jetson GPU
+├── deploy_tvm.py           # Deployment script for CPU
+├── gui.py                  # Graphical User Interface for pose visualization
+├── temporal.py             # Classic temporal evaluation for the thesis, outputs to experiments/temporal_phd_thesis/
+├── temporal_benchmark.py   # TAES inference, parameter sweep and fixed evaluation
+├── nn_stats.py             # Per-layer network stats including MAC count and parameters
+├── soft_class_plot.py      # Experiment to visualize impact of soft-classification encoding/decoding on pose accuracy
+├── README.md               # This file
+└── LICENSE                 # MIT License
 ```
 
 ---
@@ -176,6 +181,21 @@ If you use the **D-SPEED** dataset, please cite the dataset specifically:
   doi          = {10.5281/zenodo.15851302},
   url          = {https://doi.org/10.5281/zenodo.15851302},
 }
+```
+
+---
+
+## 🧪 Tests
+
+The tests in `tests/` currently cover only the **TAES temporal benchmark**:
+causal filtering, state reset, PMF normalization, pose metrics, family aggregation,
+cache compatibility, and sweep/evaluation exports. They use synthetic inputs and
+do not require D-SPEED images, trained checkpoints, or a GPU.
+
+Run them from the repository root in the project Python environment:
+
+```bash
+python -m unittest discover -s tests -p 'test_temporal_benchmark.py' -v
 ```
 
 ---
